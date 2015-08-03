@@ -1,0 +1,95 @@
+dnsmasq:
+  #image: rsoares/centos7-dnsmasq
+  build: 
+   - docker-images/base/centos7-base
+   - docker-images/base/centos7-java
+   - docker-images/base/centos7-jon-agent
+   - docker-images/dnsmasq
+  ports:
+   - "172.17.42.1:53:53/udp"
+  volumes:
+   - /etc/timezone:/etc/timezone:ro
+   - /tmp/share:/tmp/share
+  privileged: true
+  hostname: dnsmasq
+jonpostgres:
+  #image: rsoares/centos7-jon-postgres
+  build: docker-images/jon-postgres
+  environment:
+   - DB_USER=rhqadmin
+   - DB_PASS=rhqadmin
+   - DB_NAME=rhq
+  volumes_from:
+   - dnsmasq
+  volumes:
+   - /etc/timezone:/etc/timezone:ro
+   - /tmp/share:/tmp/share
+  privileged: true
+  hostname: jon-postgres
+  links:
+   - dnsmasq
+  dns:
+  - 172.17.42.1
+jonserver:
+  #image: rsoares/centos7-jon-server
+  build: docker-images/jon-server
+  volumes_from:
+   - dnsmasq
+  volumes:
+   - /etc/timezone:/etc/timezone:ro
+   - /tmp/share:/tmp/share
+  privileged: true
+  hostname: jon-server
+  links:
+   - jonpostgres
+  dns:
+  - 172.17.42.1
+ewshttpd:
+  #image: rsoares/centos7-ews
+  build: docker-images/ews
+  volumes_from:
+   - dnsmasq
+  volumes:
+   - /etc/timezone:/etc/timezone:ro
+   - /tmp/share:/tmp/share
+  privileged: true
+  hostname: apache
+  dns:
+  - 172.17.42.1
+eapmaster:
+  #image: rsoares/centos7-eap6
+  build: docker-images/eap
+  command: domain --host-config=host-master.xml --master-address=localhost
+  volumes_from:
+   - dnsmasq
+  volumes:
+   - /etc/timezone:/etc/timezone:ro
+   - /tmp/share:/tmp/share
+  privileged: true
+  hostname: master
+  dns:
+  - 172.17.42.1
+eapslave1:
+  image: rsoares/centos7-eap
+  command: domain --host-config=host-slave.xml --master-address=master
+  volumes_from:
+   - dnsmasq
+  volumes:
+   - /etc/timezone:/etc/timezone:ro
+   - /tmp/share:/tmp/share
+  privileged: true
+  hostname: eap-slave1
+  dns:
+  - 172.17.42.1
+eapslave2:
+  image: rsoares/centos7-eap
+  command: domain --host-config=host-slave.xml --master-address=master
+  volumes_from:
+   - dnsmasq
+  volumes:
+   - /etc/timezone:/etc/timezone:ro
+   - /tmp/share:/tmp/share
+  privileged: true
+  hostname: eap-slave2
+  dns:
+  - 172.17.42.1
