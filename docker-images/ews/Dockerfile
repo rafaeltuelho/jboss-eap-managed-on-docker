@@ -1,4 +1,4 @@
-FROM rsoares/centos7-jon-agent
+FROM rsoares/jon-agent
 
 MAINTAINER Gustavo Luszczynski <gluszczy@redhat.com>, Rafael T. C. Soares <rafaelcba@gmail.com>
 
@@ -9,7 +9,7 @@ RUN yum install -y apr-util mailcap openssl; yum clean all
 
 RUN useradd -c "Apache" -u 48 -s /bin/sh -r apache
 
-COPY ../../software/jon/*.zip /tmp/
+COPY software/*.zip /tmp/
 
 RUN unzip /tmp/jboss-ews-*.zip -d $SOFTWARE_INSTALL_DIR/; \
 	unzip /tmp/jboss-eap-native-*.zip -d $SOFTWARE_INSTALL_DIR/

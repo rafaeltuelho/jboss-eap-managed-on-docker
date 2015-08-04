@@ -2,14 +2,16 @@
 
 SOFTWARE_DIR="./software"
 IMAGES_DIR="./docker-images"
+USER_TAG_NAME="rsoares"
 
 EAP_SERVER_PKG_NAME="jboss-eap-*.zip"
+EAP_PATCH_PKG_NAME="jboss-eap-*-patch*.zip"
 EAP_NATIVE_PKG_NAME="jboss-eap-native*.zip"
 EWS_HTTPD_PKG_NAME="jboss-ews-httpd*.zip"
 JON_SERVER_PKG_NAME="jon-server-*.zip"
+JON_UPDATE_PKG_NAME="jon-server-*-update-*.zip"
 JON_PLUGIN_PKG_NAME="jon-plugin-*.zip"
-
-#>/dev/null 2>&1
+RHQ_AGENT_PKG_NAME="rhq-enterprise-agent*.jar"
 
 echo -e "\n This setup needs the following softwares packages (zip files):
 	* JBoss EAP 6.x
@@ -48,39 +50,74 @@ function test_bin_pkgs(){
    	exit 1
 }
 
-function test_patch_pkgs(){
-   SFW=$1
-   find_result=$(find $SOFTWARE_DIR/$SFW/patch -name "*.zip")
+function build_image(){
+   IMG_NAME="${1}"
 
-   # if there is no patch zip files create a fake one to avoid issues with COPY instructions on Dockefiles
-   [[ -z $find_result ]] && \
-	touch $SOFTWARE_DIR/$SFW/patch/dummy_pkg.zip
+   #test if the image is already on local docker repo
+   docker images | grep $IMG_NAME >/dev/null 2>&1
+   if [ $? != 0 ] # image not found in the local repo
+   then
+      echo -e "----->
+	\t '$USER_TAG_NAME/$IMG_NAME' not found on local docker repo. 
+	\t\t I will try to build it \n<-----\n"
+
+      [[ ! -f $IMAGES_DIR/$IMG_NAME/Dockerfile ]] && \
+   	echo -e "\t Dockerfile not found for base image: $IMG_NAME" && \
+	exit 1
+      
+      docker build -t "$USER_TAG_NAME/$IMG_NAME" $IMAGES_DIR/$IMG_NAME
+   fi
 }
 
 echo -e "\n >>> Check the softwares required to setup the environment"
 test_bin_pkgs $EAP_SERVER_PKG_NAME
+#test_bin_pkgs $EAP_PATCH_PKG_NAME
 test_bin_pkgs $EAP_NATIVE_PKG_NAME
 test_bin_pkgs $EWS_HTTPD_PKG_NAME
 test_bin_pkgs $JON_SERVER_PKG_NAME
+#test_bin_pkgs $JON_UPDATE_PKG_NAME
 test_bin_pkgs $JON_PLUGIN_PKG_NAME
 
-echo -e "\t >>> extracting the rhq-agent JAR installer..."
-unzip -j "$SOFTWARE_DIR/jon/jon-server*.zip" \
+echo -e "\n >>> extracting the rhq-agent JAR installer..."
+unzip -j "$SOFTWARE_DIR/$JON_UPDATE_PKG_NAME" \
 	"jon-server-*/modules/org/rhq/server-startup/main/deployments/rhq.ear/rhq-downloads/rhq-agent/rhq-enterprise-agent-*.jar" \
-	-d software/jon
+	-d software/
 
-echo -e "\t >>> Check if there is patch packages..."
-test_patch_pkgs "eap"
-test_patch_pkgs "jon"
+echo -e "\n >>> Move the zip pkgs files to its respective image's DIRs"
+# this is necessary because Dockerfile COPY does not support relative paths (../somepath)
+
+cp $SOFTWARE_DIR/$RHQ_AGENT_PKG_NAME  $IMAGES_DIR/jon-agent/software/
+mv $SOFTWARE_DIR/$RHQ_AGENT_PKG_NAME  $IMAGES_DIR/jon-postgres/software/
+
+mv $SOFTWARE_DIR/$JON_UPDATE_PKG_NAME $IMAGES_DIR/jon-server/software/patch/ >/dev/null 2>&1
+mv $SOFTWARE_DIR/$JON_PLUGIN_PKG_NAME $IMAGES_DIR/jon-server/software/
+mv $SOFTWARE_DIR/$JON_SERVER_PKG_NAME $IMAGES_DIR/jon-server/software/
+
+mv $SOFTWARE_DIR/$EAP_NATIVE_PKG_NAME $IMAGES_DIR/ews/software/
+mv $SOFTWARE_DIR/$EWS_HTTPD_PKG_NAME  $IMAGES_DIR/ews/software/
+
+mv $SOFTWARE_DIR/$EAP_PATCH_PKG_NAME  $IMAGES_DIR/eap/software/patch/ >/dev/null 2>&1
+mv $SOFTWARE_DIR/$EAP_SERVER_PKG_NAME $IMAGES_DIR/eap/software/
 
 # avoid permission error during build process
-chmod a+r $SOFTWARE_DIR/
+chmod a+rx $SOFTWARE_DIR/
 
-#--------
+echo -e "\n >>> Build images..."
+echo -e "\n\t *** This step takes some minutes to finish... PLEASE WAIT...\n"
+build_image "centos7-base"
+build_image "java-base"
+build_image "dnsmasq"
+build_image "jon-agent"
+build_image "jon-postgres"
+build_image "jon-server"
+build_image "ews"
+build_image "eap"
 
-echo -e "\n >>> ALL SET!"
+echo -e "\n----->"
+echo -e " >>> ALL SET!"
 echo -e "\t now you can start all the environment"
 echo -e "\t from this repo's root directory enter the following command
 		> docker-compose up
-		wait some minutes and VOILA!"
+		wait some minutes and VOILA!
+<-----"
 

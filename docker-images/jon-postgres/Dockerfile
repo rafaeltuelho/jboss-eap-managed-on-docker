@@ -10,7 +10,7 @@ ENV SOFTWARE_INSTALL_DIR /opt/redhat
 ENV JAVA_HOME /usr/lib/jvm/jre
 
 # install the RHQ/JON Agent to monitor the Postgres instance inside the container
-COPY ../../software/jon/rhq-enterprise-agent-*.jar /tmp/
+COPY software/rhq-enterprise-agent-*.jar /tmp/
 RUN java -jar /tmp/rhq-enterprise-agent-*.jar --install=$SOFTWARE_INSTALL_DIR
 RUN rm /tmp/rhq-enterprise-agent-*.jar
 

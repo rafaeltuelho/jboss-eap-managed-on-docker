@@ -44,17 +44,29 @@ then
    
    echo -e "\t\t JBoss startup ADDITIONAL parameters: [$ADDITIONAL_PARAMS] \n "
 
-   #HOST_CONFIG="host.xml"
-
-   #[[ "${$2}" == "master" ]] && HOST_CONFIG="host-master.xml"
-   #[[ "${$2}" == "slave"  ]] && HOST_CONFIG="host-slave.xml"
-   #--host-config=<config> 
-   #--master-address=<address>
-
-   #define the hostname used in stop commando for domain mode
+   #define the hostname used in stop command for domain mode
    JBOSS_HOST_NAME="master"
+   MASTER_SERVER="master"
+   MASTER_PORT=9999
+
    # if is a host slave sets it as DC backup
-   [[ $@ == *slave* ]] && JBOSS_HOST_NAME="$HOSTNAME" && ADDITIONAL_PARAMS="$ADDITIONAL_PARAMS --backup" 
+   if [[ $@ == *slave* ]]
+   then
+      JBOSS_HOST_NAME="$HOSTNAME"
+      ADDITIONAL_PARAMS="$ADDITIONAL_PARAMS --backup"
+
+      #test if the data base backend is up!
+      MASTER_STATUS="DOWN"
+      COUNTER=0
+      while [ "$MASTER_STATUS" == "DOWN" -a $COUNTER -lt 6 ]
+      do
+         MASTER_STATUS=`(echo > /dev/tcp/$MASTER_SERVER/$MASTER_PORT) >/dev/null 2>&1 && echo "UP" || echo "DOWN"`
+         echo -e "\t MASTER connection status: $MASTER_STATUS"
+         echo -e "\t t_$COUNTER: [$(date +'%H:%M:%S')] waintig 10s for MASTER connetion..."
+         sleep 10
+         let COUNTER=COUNTER+1
+      done
+   fi
 
    # some properties to avoid JGroups issues when using cluster/ha profiles
    SERVER_OPTS="-Djboss.node.name=$HOSTNAME -Djgroups.bind_addr=$CONTAINER_IP_ADDR"
@@ -86,6 +98,4 @@ stop_container(){
 trap 'echo TRAPed signal; stop_container' HUP INT QUIT KILL TERM
 
 wait %1
-#echo -e "\n\t >>> Container's startup process ($0) runing in foreground . HIT enter to STOP!!!"
-#read
 

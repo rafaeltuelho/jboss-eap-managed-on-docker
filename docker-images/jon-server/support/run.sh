@@ -20,7 +20,7 @@ then
         do
 	   DB_STATUS=`(echo > /dev/tcp/$DB_SERVER/$DB_PORT) >/dev/null 2>&1 && echo "UP" || echo "DOWN"`
            echo -e "\t DB connection status: $DB_STATUS"
-           echo -e "\t waintig 5s for DB connetion..."
+           echo -e "\t t_$COUNTER: [$(date +'%H:%M:%S')]  waintig 5s for DB connetion..."
 	   sleep 5
 	   let COUNTER=COUNTER+1
 	done

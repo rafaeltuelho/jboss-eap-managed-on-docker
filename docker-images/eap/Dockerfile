@@ -1,4 +1,4 @@
-FROM rsoares/centos7-jon-agent
+FROM rsoares/jon-agent
 
 MAINTAINER Gustavo Luszczynski <gluszczy@redhat.com>, Rafael T. C. Soares <rafaelcba@gmail.com>
 
@@ -12,9 +12,9 @@ RUN groupadd -f -r jboss -g 433 && \
 
 RUN chown -R jboss.jboss $SOFTWARE_INSTALL_DIR
 
-COPY ../../software/eap/*.zip         /tmp/
-COPY ../../software/eap/patch/*.zip   /tmp/patch/
-#COPY ../../software/eap/modules/*.zip /tmp/modules/
+COPY software/*.zip         /tmp/
+COPY software/patch/*   /tmp/patch/
+#COPY software/eap/modules/*.zip /tmp/modules/
 COPY support/applyPatch.sh  /
 
 RUN unzip -q /tmp/jboss-eap-*.zip -d $SOFTWARE_INSTALL_DIR

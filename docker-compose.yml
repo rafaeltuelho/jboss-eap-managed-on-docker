@@ -1,10 +1,6 @@
 dnsmasq:
-  #image: rsoares/centos7-dnsmasq
-  build: 
-   - docker-images/base/centos7-base
-   - docker-images/base/centos7-java
-   - docker-images/base/centos7-jon-agent
-   - docker-images/dnsmasq
+#  build: docker-images/dnsmasq
+  image: rsoares/dnsmasq
   ports:
    - "172.17.42.1:53:53/udp"
   volumes:
@@ -13,8 +9,8 @@ dnsmasq:
   privileged: true
   hostname: dnsmasq
 jonpostgres:
-  #image: rsoares/centos7-jon-postgres
-  build: docker-images/jon-postgres
+#  build: docker-images/jon-postgres
+  image: rsoares/jon-postgres
   environment:
    - DB_USER=rhqadmin
    - DB_PASS=rhqadmin
@@ -31,8 +27,8 @@ jonpostgres:
   dns:
   - 172.17.42.1
 jonserver:
-  #image: rsoares/centos7-jon-server
-  build: docker-images/jon-server
+#  build: docker-images/jon-server
+  image: rsoares/jon-server
   volumes_from:
    - dnsmasq
   volumes:
@@ -45,8 +41,8 @@ jonserver:
   dns:
   - 172.17.42.1
 ewshttpd:
-  #image: rsoares/centos7-ews
-  build: docker-images/ews
+#  build: docker-images/ews
+  image: rsoares/ews
   volumes_from:
    - dnsmasq
   volumes:
@@ -57,8 +53,8 @@ ewshttpd:
   dns:
   - 172.17.42.1
 eapmaster:
-  #image: rsoares/centos7-eap6
-  build: docker-images/eap
+#  build: docker-images/eap
+  image: rsoares/eap
   command: domain --host-config=host-master.xml --master-address=localhost
   volumes_from:
    - dnsmasq
@@ -70,7 +66,7 @@ eapmaster:
   dns:
   - 172.17.42.1
 eapslave1:
-  image: rsoares/centos7-eap
+  image: rsoares/eap
   command: domain --host-config=host-slave.xml --master-address=master
   volumes_from:
    - dnsmasq
@@ -79,10 +75,12 @@ eapslave1:
    - /tmp/share:/tmp/share
   privileged: true
   hostname: eap-slave1
+  links:
+   - dnsmasq
   dns:
   - 172.17.42.1
 eapslave2:
-  image: rsoares/centos7-eap
+  image: rsoares/eap
   command: domain --host-config=host-slave.xml --master-address=master
   volumes_from:
    - dnsmasq
@@ -91,5 +89,7 @@ eapslave2:
    - /tmp/share:/tmp/share
   privileged: true
   hostname: eap-slave2
+  links:
+   - dnsmasq
   dns:
   - 172.17.42.1
