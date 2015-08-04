@@ -54,7 +54,7 @@ function build_image(){
    IMG_NAME="${1}"
 
    #test if the image is already on local docker repo
-   docker images | grep $IMG_NAME >/dev/null 2>&1
+   docker images | grep "$USER_TAG_NAME/$IMG_NAME" >/dev/null 2>&1
    if [ $? != 0 ] # image not found in the local repo
    then
       echo -e "----->
