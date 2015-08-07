@@ -43,18 +43,18 @@ and many other things JBoss EAP can offer...
 
 ---
 
-Well lest prepare your host to build and setup all this.
+Well lets prepare your host to build and setup all these things.
 
-First you have to to download or clone this repository into a work directory in you host.
+First you have to to download or clone this repository into a work directory in your host.
  * if you have `git` installed in your system:
 
 ```git clone git@github.com:rafaeltuelho/jboss-eap-managed-on-docker.git```
 
  * or just download the repo's zip file: Click on `Download ZIP` button located in right side of this page.
 
-After that you nedd the product's binaries packages!
+After that you need the product's binaries packages!
 
-Access the https://access.redhat.com with your Red Hat account and download the following installers:
+Access the https://access.redhat.com with your Red Hat account and download the following zip installers:
 
 > NOTE: download the latest releases!
 
@@ -72,7 +72,7 @@ See some screenshots where you can find each software package on Red Hat Custome
 --
 ![JON EAP Plugin](static/img/redhat-csp-jon-for-eap.png "EAP Plugin")
 
-At the time I was writting this guide the following versions was available:
+At the time I was writing this guide the following versions was available:
 ```
 jboss-eap-6.4.0.zip
 jon-server-3.3.0.GA.zip
@@ -132,7 +132,7 @@ Attaching to jbosseapmanagedondocker_dnsmasq_1, jbosseapmanagedondocker_eapmaste
 ...
 
 ```
-> it may take few minutes to docker-compose create all the containers. Remember the infra diagram! There are many components involved in this setup.
+> it may take few minutes to `docker-compose` create all the containers. Remember the infra diagram! There are many components involved in this setup.
 
 > NOTE: in RHEL like systems (Fedora or Centos) the Local Firewall runs by default. If this is your case, stop it or add a new rule to accept connections on `docker0` interface for UDP PORT `53` (DNS). Our `dnsmasq` service binds to `docker0` (usually with `172.17.42.1` addr).
 
@@ -159,7 +159,7 @@ Now you can access the services by name:
 
 To access some container shell use the `docker exec` command.
 
-Get the conatiner's name or id you want to access.
+Get the container's name or id you want to access.
 ```
 > docker-compose ps
                 Name                                 Command                                 State                                  Ports
@@ -184,7 +184,7 @@ jbosseapmanagedondocker_jonserver_1    /run.sh                                Up
 
 ```
 
-whith the container's name or id:
+with the container's name or id:
 ```
 docker exec -ti jbosseapmanagedondocker_eapmaster_1 /bin/bash
 ```
