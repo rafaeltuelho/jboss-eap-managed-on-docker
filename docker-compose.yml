@@ -1,5 +1,4 @@
 dnsmasq:
-#  build: docker-images/dnsmasq
   image: rsoares/dnsmasq
   ports:
    - "172.17.42.1:53:53/udp"
@@ -9,7 +8,6 @@ dnsmasq:
   privileged: true
   hostname: dnsmasq
 jonpostgres:
-#  build: docker-images/jon-postgres
   image: rsoares/jon-postgres
   environment:
    - DB_USER=rhqadmin
@@ -27,7 +25,6 @@ jonpostgres:
   dns:
   - 172.17.42.1
 jonserver:
-#  build: docker-images/jon-server
   image: rsoares/jon-server
   volumes_from:
    - dnsmasq
@@ -41,7 +38,6 @@ jonserver:
   dns:
   - 172.17.42.1
 ewshttpd:
-#  build: docker-images/ews
   image: rsoares/ews
   volumes_from:
    - dnsmasq
@@ -53,7 +49,6 @@ ewshttpd:
   dns:
   - 172.17.42.1
 eapmaster:
-#  build: docker-images/eap
   image: rsoares/eap
   command: domain --host-config=host-master.xml --master-address=localhost
   volumes_from:

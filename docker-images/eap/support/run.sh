@@ -58,7 +58,7 @@ then
       #test if the data base backend is up!
       MASTER_STATUS="DOWN"
       COUNTER=0
-      while [ "$MASTER_STATUS" == "DOWN" -a $COUNTER -lt 6 ]
+      while [ "$MASTER_STATUS" == "DOWN" -a $COUNTER -lt 12 ]
       do
          MASTER_STATUS=`(echo > /dev/tcp/$MASTER_SERVER/$MASTER_PORT) >/dev/null 2>&1 && echo "UP" || echo "DOWN"`
          echo -e "\t MASTER connection status: $MASTER_STATUS"
