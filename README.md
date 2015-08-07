@@ -116,7 +116,7 @@ centos                 latest              7322fbe74aa5        7 weeks ago      
 centos/postgresql      latest              abd6fe69720d        9 months ago        327.3 MB
 ```
 
-== Startup!
+## Startup!
 
 after that, if all worked fine you finally can do
 
