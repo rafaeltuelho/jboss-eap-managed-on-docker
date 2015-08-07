@@ -1,5 +1,6 @@
 # JBoss EAP Managed on Docker
 
+## Intruduction
 Provides a complete **JBoss EAP 6** environment managed by **JBoss Operations Network** (JON/RHQ) and load balanced/proxied by **Apache Httpd Server** (JBoss EWS with `mod_cluster`)
 
 The diagram below shows the complete environment.
@@ -43,6 +44,8 @@ and many other things JBoss EAP can offer...
 
 ---
 
+## Download softwares
+
 Well lets prepare your host to build and setup all these things.
 
 First you have to to download or clone this repository into a work directory in your host.
@@ -85,6 +88,8 @@ jboss-eap-native-webserver-connectors-6.4.0-RHEL7-x86_64.zip
 
 put them all inside the `software/` directory.
 
+## Prepare the environment
+
 Now execute the `./prepare.sh` script.
 
 It will check some prereqs in your system and build all the Docker Images needed by `docker-compose` to startup the Containers.
@@ -111,6 +116,8 @@ centos                 latest              7322fbe74aa5        7 weeks ago      
 centos/postgresql      latest              abd6fe69720d        9 months ago        327.3 MB
 ```
 
+== Startup!
+
 after that, if all worked fine you finally can do
 
 ```
@@ -136,6 +143,8 @@ Attaching to jbosseapmanagedondocker_dnsmasq_1, jbosseapmanagedondocker_eapmaste
 
 > NOTE: in RHEL like systems (Fedora or Centos) the Local Firewall runs by default. If this is your case, stop it or add a new rule to accept connections on `docker0` interface for UDP PORT `53` (DNS). Our `dnsmasq` service binds to `docker0` (usually with `172.17.42.1` addr).
 
+## Access the services
+
 To be able to access the services by name on your local browser add a new entry in your `/etc/resolv.conf` file (Docker Host).
 
 ```
@@ -145,10 +154,14 @@ nameserver 172.17.42.1
 
 Now you can access the services by name:
 * JON Server console: `http://jon-server:7070/`
+ * login credentials: `rhqadmin/rhqadmin`
+
 ![JON](static/img/jon-server-inventory-import.png)
 > NOTE: you have to manually import the discovered resource in the first time JON start monitor a given host. Select all the resource in the `Inventory > Discovery Queue` and click the Blue `Import` button.
 
 * JBoss EAP Management Console (Doman COntroller): `http://master:9990/`
+ * login credentials: `admin/jboss@123`
+
 ![EAP](static/img/eap-master-dc.png)
 
 * Apache Httpd mod_cluster Manager: `http://apache:6666/mod_cluster_manager`
@@ -189,16 +202,19 @@ with the container's name or id:
 docker exec -ti jbosseapmanagedondocker_eapmaster_1 /bin/bash
 ```
 
-To stop all the environment use:
+## Other tasks
+
+### To stop all the environment use:
 ```
 docker-compose stop
 ```
 
-To cleanup the stopped images to save you disk space:
+### To cleanup the stopped images to save you disk space:
 ```
 docker rm `sudo docker ps -qa --filter 'status=exited'`
 ```
-To see how many resources (CPU and RAM) your containers are consuming:
+
+### To see how many resources (CPU and RAM) your containers are consuming:
 
 ```
 docker stats \
