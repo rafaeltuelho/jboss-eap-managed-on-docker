@@ -1,7 +1,7 @@
 dnsmasq:
   image: rsoares/dnsmasq
   ports:
-   - "172.17.42.1:53:53/udp"
+   - "53:53/udp"
   volumes:
    - /etc/timezone:/etc/timezone:ro
    - /tmp/share:/tmp/share
@@ -23,9 +23,11 @@ jonpostgres:
   links:
    - dnsmasq
   dns:
-  - 172.17.42.1
+   - 172.17.42.1
 jonserver:
   image: rsoares/jon-server
+  ports:
+   - "7080:7080"
   volumes_from:
    - dnsmasq
   volumes:
@@ -36,9 +38,12 @@ jonserver:
   links:
    - jonpostgres
   dns:
-  - 172.17.42.1
+   - 172.17.42.1
 ewshttpd:
   image: rsoares/ews
+  ports:
+   - "80:80"
+   - "6666:6666"
   volumes_from:
    - dnsmasq
   volumes:
@@ -47,9 +52,12 @@ ewshttpd:
   privileged: true
   hostname: apache
   dns:
-  - 172.17.42.1
+   - 172.17.42.1
 eapmaster:
   image: rsoares/eap
+  ports:
+   - "9990:9990"
+   - "9999:9999"
   command: domain --host-config=host-master.xml --master-address=localhost
   volumes_from:
    - dnsmasq
@@ -59,7 +67,7 @@ eapmaster:
   privileged: true
   hostname: master
   dns:
-  - 172.17.42.1
+   - 172.17.42.1
 eapslave1:
   image: rsoares/eap
   command: domain --host-config=host-slave.xml --master-address=master
@@ -73,7 +81,7 @@ eapslave1:
   links:
    - dnsmasq
   dns:
-  - 172.17.42.1
+   - 172.17.42.1
 eapslave2:
   image: rsoares/eap
   command: domain --host-config=host-slave.xml --master-address=master
@@ -87,4 +95,4 @@ eapslave2:
   links:
    - dnsmasq
   dns:
-  - 172.17.42.1
+   - 172.17.42.1

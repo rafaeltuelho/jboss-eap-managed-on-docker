@@ -28,8 +28,18 @@ then
 	if [ ! -z "$DB_STATUS" -a "$DB_STATUS" == "UP"  ]
 	then
 		echo -e "\n\t >>> Install RHQ/JON Server <<< \n"
-		${RHQ_SERVER_HOME}/bin/rhqctl install &
-		wait %1
+		${RHQ_SERVER_HOME}/bin/rhqctl install --storage --start
+		#wait %1
+		${RHQ_SERVER_HOME}/bin/rhqctl install --server --start
+		#wait %1
+		${RHQ_SERVER_HOME}/bin/rhqctl install --agent --start
+		#wait %1
+
+                sleep 15
+
+		${RHQ_SERVER_HOME}/bin/rhqctl status
+                sleep 5
+		${RHQ_SERVER_HOME}/bin/rhqctl stop
 
 		echo -e "\n\t >>> Apply Patches/Updates to RHQ/JON Server <<< \n"
 		/applyPatch.sh &

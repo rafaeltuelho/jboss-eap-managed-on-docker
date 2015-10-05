@@ -36,9 +36,12 @@ docker-compose --version
 [[ $? != 0 ]] && echo -e "\tdocker-compose not installed or not present in your PATH" && exit 1
 docker images >/dev/null 2>&1
 [[ $? != 0 ]] && \
-   echo -e "\t ups! It appears you ($USER) can't execute docker commands. 
-		PLEASE add the $USER to sudors or to docker system group ('usermod -aG docker $USER')
-		or execute this script as root!" && \
+   echo -e "\t ups! It appears you ($USER) can't execute docker commands.
+                If you are running on Linux: 
+		\tPLEASE add the $USER to sudors or to docker system group ('usermod -aG docker $USER')
+		or execute this script as root!
+                If you are runing on Mac OS X:
+                \tPLEASE make shure your boot2Docker or docker-machine is started!" && \
    exit 1
 
 
@@ -83,6 +86,9 @@ unzip -j "$SOFTWARE_DIR/$JON_UPDATE_PKG_NAME" \
 	"jon-server-*/modules/org/rhq/server-startup/main/deployments/rhq.ear/rhq-downloads/rhq-agent/rhq-enterprise-agent-*.jar" \
 	-d software/
 
+# avoid permission error during build process
+chmod a+rx $SOFTWARE_DIR/*
+
 echo -e "\n >>> Move the zip pkgs files to its respective image's DIRs"
 # this is necessary because Dockerfile COPY does not support relative paths (../somepath)
 
@@ -98,9 +104,6 @@ mv $SOFTWARE_DIR/$EWS_HTTPD_PKG_NAME  $IMAGES_DIR/ews/software/
 
 mv $SOFTWARE_DIR/$EAP_PATCH_PKG_NAME  $IMAGES_DIR/eap/software/patch/ >/dev/null 2>&1
 mv $SOFTWARE_DIR/$EAP_SERVER_PKG_NAME $IMAGES_DIR/eap/software/
-
-# avoid permission error during build process
-chmod a+rx $SOFTWARE_DIR/
 
 echo -e "\n >>> Build images..."
 echo -e "\n\t *** This step takes some minutes to finish... PLEASE WAIT...\n"
