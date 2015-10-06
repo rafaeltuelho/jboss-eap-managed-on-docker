@@ -1,3 +1,3 @@
 #!/bin/bash
 
-find . -type f -name "*.zip" -exec mv '{}' ./software/ \;
+find ./docker-images -type f -name "*.zip" -exec mv '{}' ./software/ \;

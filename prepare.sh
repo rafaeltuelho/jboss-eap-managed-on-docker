@@ -38,7 +38,7 @@ docker images >/dev/null 2>&1
 [[ $? != 0 ]] && \
    echo -e "\t ups! It appears you ($USER) can't execute docker commands.
                 If you are running on Linux: 
-		\tPLEASE add the $USER to sudors or to docker system group ('usermod -aG docker $USER')
+		\tPLEASE add the $USER to sudors or add it to docker's system group ('usermod -aG docker $USER')
 		or execute this script as root!
                 If you are runing on Mac OS X:
                 \tPLEASE make shure your boot2Docker or docker-machine is started!" && \
@@ -46,6 +46,9 @@ docker images >/dev/null 2>&1
 
 
 function test_bin_pkgs(){
+   # in case the pkgs was moved to their docker-images dirs before. Bring them back to the software dir
+   ./reverse_packages.sh
+
    find_result=$(find $SOFTWARE_DIR/ -name "$1")
    [[ -z $find_result ]] && \
     	echo -e "\t $1 file not found!
