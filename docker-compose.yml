@@ -1,7 +1,7 @@
 dnsmasq:
   image: rsoares/dnsmasq
   ports:
-   - "53:53/udp"
+   - "172.17.42.1:53:53/udp"
   volumes:
    - /etc/timezone:/etc/timezone:ro
    - /tmp/share:/tmp/share
