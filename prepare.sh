@@ -36,14 +36,19 @@ docker-compose --version
 [[ $? != 0 ]] && echo -e "\tdocker-compose not installed or not present in your PATH" && exit 1
 
 
-if [ "$OSTYPE" != "gnu-linux" ] # host not linux like
+if [ "$OSTYPE" != "linux-gnu" ] # host not linux like
 then
-   echo -e "It appears your host is not a Linux OS. Let's cheack if your have Docker Machine/Boot2Docker"
-   
-   docker-machine --version
-   [[ $? != 0 ]] && echo -e "\tdocker-machine not installed or not present in your PATH" && exit 1
+   echo
+   echo -e "It appears your host is not a Linux OS. Let's check if your have Docker Machine/Boot2Docker"
+   echo 
 
-   echo -e "\t ENSURE your docker-machine instance have enough Disk and RAM mem available to run this setup. I recomend at least 20gb Disk and 4gb RAM"
+   docker-machine --version
+   [[ $? != 0 ]] && echo -e "\tdocker-machine not installed or not present in your PATH\n" && exit 1
+   
+   echo
+   
+   docker-machine ls
+   echo -e "\n\t ENSURE your docker-machine instance have enough Disk and RAM mem available to run this setup. I recomend at least 20gb Disk and 4gb RAM"
 fi
 
 docker images >/dev/null 2>&1
@@ -53,7 +58,7 @@ docker images >/dev/null 2>&1
 		\tPLEASE add the $USER to the  docker's system group ('usermod -aG docker $USER')
 		or execute this script as root using sudo!
                 If you are runing on Mac OS X:
-                \tPLEASE make shure your boot2Docker or docker-machine is started!" && \
+                \tPLEASE make shure your docker-machine instance is started and execute \n\t\t\t\t'docker-machine env <instance name>'!" && \
    exit 1
 
 
