@@ -66,6 +66,8 @@ eapmaster:
    - /tmp/share:/tmp/share
   privileged: true
   hostname: master
+  links:
+   - dnsmasq
   dns:
    - 172.17.42.1
 eapslave1:
