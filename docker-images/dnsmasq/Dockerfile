@@ -14,8 +14,8 @@ COPY support/incron_dnsmaq_monitor.conf  /etc/incron.d/
 COPY support/run.sh /
 
 # set the Google public DNS service to external lookups in dnsmasq service
-RUN echo "nameserver 8.8.8.8" >> /etc/resolv.dnsmasq.conf; \
-    echo "root" > /etc/incron.allow
+#RUN echo "nameserver 8.8.8.8" >> /etc/resolv.dnsmasq.conf; \
+RUN echo "root" > /etc/incron.allow
 
 # every container whats use a DNS service 
 # for service discorey have to mount this volume.
