@@ -45,16 +45,16 @@ and many other things JBoss EAP can offer...
 ---
 ## Prereqs
 
-Before start ensure your environment is suitable for this setup!
+Before starting ensure your environment is suitable for this setup!
 ### Common reqs:
  * At least 6 gb of Mem. RAM available
  * At least 10 gb of disk available
- * Docker engine installed
+ * Docker Engine installed
  * Docker Compose installed
 
 ### For Linux systems:
  * Firewall service running
- * PLEASE add your `$USER` to the docker's system group:
+ * PLEASE, add your `$USER` to the docker's system group:
 
 ```
   sudo groupadd docker
@@ -74,7 +74,7 @@ Well lets prepare your host to build and setup all these things.
 First you have to to download or clone this repository into a work directory in your host.
  * if you have `git` installed in your system:
 
-```git clone git@github.com:rafaeltuelho/jboss-eap-managed-on-docker.git```
+```git clone https://github.com/rafaeltuelho/jboss-eap-managed-on-docker.git```
 
  * or just download the repo's zip file: Click on `Download ZIP` button located in right side of this page.
 
@@ -165,9 +165,12 @@ Attaching to jbosseapmanagedondocker_dnsmasq_1, jbosseapmanagedondocker_eapmaste
 > it may take few minutes to `docker-compose` create all the containers. Remember the infra diagram! There are many components involved in this setup.
 
 :bangbang: **IMPORTANT NOTE** :bangbang:
+---
 In most linux systems by default Docker engine uses `iptables` to create network links between containers. So PLEASE **make sure** your firewall service (`iptables` or `firewalld`) is enabled in your system.
 
-In RHEL like systems (Fedora or Centos) the Local Firewall normally is enabled by default. If this is your case, configure it (add a new rule) to accept connections on `docker0` interface for UDP PORT `53` (DNS). Our `dnsmasq` service binds to `docker0` (usually with `172.17.42.1` addr) on UDP 53 port. See the Troubleshooting section for more details.
+In RHEL like systems (Fedora or CentOS) the Local Firewall normally is enabled by default. If this is your case, configure it (add a new rule) to accept connections on `docker0` interface for UDP PORT `53` (DNS).
+Our `dnsmasq` service binds to `docker0` (usually with `172.17.42.1` addr) on UDP 53 port. See the Troubleshooting section bellow for more details.
+---
 
 ## Access the services
 
@@ -242,12 +245,16 @@ docker-compose logs jonserver
 
 ### To stop all the environment use:
 ```
-docker-compose stop
+docker-compose stop|kill
 ```
 
 ### To cleanup the stopped images to save you disk space:
 ```
 docker rm `sudo docker ps -qa --filter 'status=exited'`
+
+or just
+
+docker-compose rm
 ```
 
 ### To see how many resources (CPU and RAM) your containers are consuming:
@@ -280,15 +287,15 @@ jbosseapmanagedondocker_jonpostgres_1   0.17%               320.5 MB/12.11 GB   
 
 ### Tested environments
 
-* RHEL 7.x
+* **RHEL 7.x**
  * Docker engine 1.8
  * Docker Compose 1.3
 
-* Fedora Workstation 22
+* **Fedora Workstation 22**
   * Docker Engine 1.8
   * Docker Compose 1.2
 
-* Mac OS X Yosemite (10.10)
+* **Mac OS X Yosemite (10.10)**
  * Docke Engine 1.8
  * Docker Machine 0.4.1
  * Docker Compose 1.4.2
@@ -300,7 +307,8 @@ The `dnsmasq` service container is a critical piece in this setup. Without the p
 
 The `dnsmaq` container will try to bind to the `docker0` network ifc and listen to `53` UDP port. You may experience some issues with your firewall service default policy.
 
-* Instructions for a RHEL 7 based (CentOS, Fedora, etc) host...
+#### Instructions for a RHEL 7 based (CentOS, Fedora, etc) host...
+
 In my case I used the graphical firewall configuration tool (hit `sudo firewall-config` in your shell console to open the tool) to apply this rule. See my screenshots:
 
 ![accept dns traffic](https://rafaeltuelho.files.wordpress.com/2015/10/rhel7-firewall-config-dns.png)
@@ -319,7 +327,8 @@ sudo firewall-cmd --zone=trusted --permanent --change-interface=docker0
 
 This can occurs in case the containers can't talk/reach each other. See the previous section (`dnsmasq` and `firewall` policy).
 
-If your `docker-compose up` command stops don't try to do `docker-compose up again`.
+If your `docker-compose up` command stops, don't try to hit `docker-compose up`.
+
 First remove the current containers instances
 
 ```
@@ -343,7 +352,7 @@ in root of your local repo directory
 
 you have to run the `prepare.sh` script again in order to rebuild your local Docker images.
 
-### Can't resolv the services by name
+### Can't resolve the services by name
 
 Ensure you have changed your `/etc/resolv.conf` to add an entry to the `dnsmasq` service:
 ```
