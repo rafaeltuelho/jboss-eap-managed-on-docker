@@ -36,14 +36,18 @@ docker-compose --version
 [[ $? != 0 ]] && echo -e "\tdocker-compose not installed or not present in your PATH" && exit 1
 
 
-if [[ ! "$OSTYPE" =~ "linux*" ]] # host not linux like
+if [[ ! "$OSTYPE" == "linux"* ]]; # host not linux like
 then
    echo
    echo -e "It appears your host is not a Linux OS. Let's check if your have Docker Machine/Boot2Docker"
    echo 
 
    docker-machine --version
-   [[ $? != 0 ]] && echo -e "\tdocker-machine not installed or not present in your PATH\n" && exit 1
+   [[ $? != 0 ]] && \
+	echo -e "\tdocker-machine not installed or not present in your PATH\n
+                 \tPLEASE make shure your docker-machine instance is started and execute\n 
+                 \t\t eval \"\$(docker-machine env <machine instance name>)\" " && \
+	exit 1
    
    echo
    
@@ -51,17 +55,20 @@ then
    echo -e "\n\t ENSURE your docker-machine instance have enough Disk and RAM mem available to run this setup. I recomend at least 20gb Disk and 4gb RAM"
 fi
 
-read
+#read
 
 docker images >/dev/null 2>&1
 [[ $? != 0 ]] && \
    echo -e "\t ups! It appears you ($USER) can't execute docker commands.
-                If you are running on Linux: 
-		\tPLEASE add the $USER to the  docker's system group ('usermod -aG docker $USER')
-		or execute this script as root using sudo!
-                If you are runing on Mac OS X:
-                \tPLEASE make shure your docker-machine instance is started and execute \n\t\t\t\t'docker-machine env <instance name>'!" && \
-   exit 1
+                If you are running on Linux:
+                ENSURE your docker engine daemon service is running. \n
+                \t on RHEL 7: > sudo systemctl start docker 
+		PLEASE add the $USER to the  docker's system group:\n\n
+                sudo groupadd docker
+                sudo usermod -aG docker $USER
+                sudo chown root:docker /var/run/docker.sock \n
+                now open a new terminal session and execute this script again\n\n
+		or execute this script as root using sudo!" && exit 1
 
 
 function test_bin_pkgs(){
