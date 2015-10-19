@@ -13,6 +13,10 @@ JON_UPDATE_PKG_NAME="jon-server-*-update-*.zip"
 JON_PLUGIN_PKG_NAME="jon-plugin-*.zip"
 RHQ_AGENT_PKG_NAME="rhq-enterprise-agent*.jar"
 
+RED='\033[0;31m'
+ORG='\033[0;33m'
+NC='\033[0m' # No Color
+
 echo -e "\n This setup needs the following softwares packages (zip files):
 	* JBoss EAP 6.x
 	\t** JBoss EAP paches  (OPTIONAL)
@@ -61,14 +65,14 @@ docker images >/dev/null 2>&1
 [[ $? != 0 ]] && \
    echo -e "\t ups! It appears you ($USER) can't execute docker commands.
                 If you are running on Linux:
-                ENSURE your docker engine daemon service is running. \n
-                \t on RHEL 7: > sudo systemctl start docker 
+                ENSURE your docker engine daemon service is running. 
+                \t on RHEL 7: > sudo systemctl start docker \n
 		PLEASE add the $USER to the  docker's system group:\n\n
-                sudo groupadd docker
-                sudo usermod -aG docker $USER
-                sudo chown root:docker /var/run/docker.sock \n
-                now open a new terminal session and execute this script again\n\n
-		or execute this script as root using sudo!" && exit 1
+                \tsudo groupadd docker
+                \tsudo usermod -aG docker $USER
+                \tsudo chown root:docker /var/run/docker.sock \n
+                \tnow open a new terminal session and execute this script again\n\n
+		\tor execute this script as root using sudo!" && exit 1
 
 
 function test_bin_pkgs(){
@@ -98,6 +102,13 @@ function build_image(){
 	exit 1
       
       docker build -t "$USER_TAG_NAME/$IMG_NAME" $IMAGES_DIR/$IMG_NAME
+   else
+      echo -e "\n\t ${ORG}The image \"${USER_TAG_NAME}/${IMG_NAME}\" was found in your local docker registry!\n"
+      tput sgr0
+      read -e -p " Want to REBUILD it(Y,n)?" -n 1 -r
+      echo
+      [[ $REPLY =~ ^[Yy]$ ]] && \
+	      docker build -t "$USER_TAG_NAME/$IMG_NAME" $IMAGES_DIR/$IMG_NAME
    fi
 }
 
