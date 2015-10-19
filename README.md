@@ -165,12 +165,16 @@ Attaching to jbosseapmanagedondocker_dnsmasq_1, jbosseapmanagedondocker_eapmaste
 > it may take few minutes to `docker-compose` create all the containers. Remember the infra diagram! There are many components involved in this setup.
 
 :bangbang: **IMPORTANT NOTE** :bangbang:
+
 ---
+
 In most linux systems by default Docker engine uses `iptables` to create network links between containers. So PLEASE **make sure** your firewall service (`iptables` or `firewalld`) is enabled in your system.
 
 In RHEL like systems (Fedora or CentOS) the Local Firewall normally is enabled by default. If this is your case, configure it (add a new rule) to accept connections on `docker0` interface for UDP PORT `53` (DNS).
 Our `dnsmasq` service binds to `docker0` (usually with `172.17.42.1` addr) on UDP 53 port. See the Troubleshooting section bellow for more details.
+
 ---
+
 
 ## Access the services
 
