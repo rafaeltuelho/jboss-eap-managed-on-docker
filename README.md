@@ -141,7 +141,10 @@ Attaching to jbosseapmanagedondocker_dnsmasq_1, jbosseapmanagedondocker_eapmaste
 ```
 > it may take few minutes to `docker-compose` create all the containers. Remember the infra diagram! There are many components involved in this setup.
 
-> NOTE: in RHEL like systems (Fedora or Centos) the Local Firewall runs by default. If this is your case, stop it or add a new rule to accept connections on `docker0` interface for UDP PORT `53` (DNS). Our `dnsmasq` service binds to `docker0` (usually with `172.17.42.1` addr).
+:bangbang: **IMPORTANT NOTE** :bangbang:
+In most linux systems by default Docker engine uses `iptables` to create network links between containers. So PLEASE **make sure** your firewall service (`iptables` or `firewalld`) is enabled in your system.
+
+In RHEL like systems (Fedora or Centos) the Local Firewall normally is enabled by default. If this is your case, configure it (add a new rule) to accept connections on `docker0` interface for UDP PORT `53` (DNS). Our `dnsmasq` service binds to `docker0` (usually with `172.17.42.1` addr) on UDP 53 port. See the Troubleshooting section for more details.
 
 ## Access the services
 
@@ -238,4 +241,36 @@ jbosseapmanagedondocker_eapslave2_1     0.66%               1.271 GB/12.11 GB   
 jbosseapmanagedondocker_ewshttpd_1      0.09%               186.6 MB/12.11 GB   1.54%               37.85 MB/22.32 MB
 jbosseapmanagedondocker_jonpostgres_1   0.17%               320.5 MB/12.11 GB   2.65%               100.4 MB/211 MB
 jbosseapmanagedondocker_jonpostgres_1   0.17%               320.5 MB/12.11 GB   2.65%               100.4 MB/211 MB
+```
+
+## Troubleshooting
+
+### Tested environments
+* RHEL 7.x
+ * Docker engine 1.8
+ * Docker Compose 1.4
+* Mac OS X Yosemite (10.10)
+ * Docker Machine 0.4.1
+   * VirtualBox driver
+* Fedora Workstation 22
+ * Docker Engine 1.8
+ * Docker Compose 1.4
+
+### dnsmasq service does not starts correctly
+
+The dnsmaq container will try to bind to the `docker0` network ifc and listen to `53` UDP port. You may experience some issues with your firewall service default policy.
+
+* Instructions for a RHEL 7 based (CentOS, Fedora, etc) host...
+In my case I used the graphical firewall configuration tool (hit `sudo firewall-config` in your shell console to open the tool) to apply this rule. See my screenshots:
+
+![accept dns traffic](https://rafaeltuelho.files.wordpress.com/2015/10/rhel7-firewall-config-dns.png)
+![trust on docker0 ifct](https://rafaeltuelho.files.wordpress.com/2015/10/rhel8-firewall-config-docker0-ifc.png)
+
+or use the following commands in your shell
+
+```
+sudo firewall-cmd --zone=trusted --add-service-dns
+sudo firewall-cmd --zone=trusted --permanent --add-service-dns
+sudo firewall-cmd --zone=trusted --change-interface=docker0
+sudo firewall-cmd --zone=trusted --permanent --change-interface=docker0
 ```

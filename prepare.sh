@@ -36,7 +36,7 @@ docker-compose --version
 [[ $? != 0 ]] && echo -e "\tdocker-compose not installed or not present in your PATH" && exit 1
 
 
-if [ "$OSTYPE" != "linux-gnu" ] # host not linux like
+if [[ ! "$OSTYPE" =~ "linux*" ]] # host not linux like
 then
    echo
    echo -e "It appears your host is not a Linux OS. Let's check if your have Docker Machine/Boot2Docker"
@@ -50,6 +50,8 @@ then
    docker-machine ls
    echo -e "\n\t ENSURE your docker-machine instance have enough Disk and RAM mem available to run this setup. I recomend at least 20gb Disk and 4gb RAM"
 fi
+
+read
 
 docker images >/dev/null 2>&1
 [[ $? != 0 ]] && \
