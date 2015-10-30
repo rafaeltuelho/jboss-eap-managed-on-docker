@@ -17,7 +17,7 @@ COPY software/patch/*   /tmp/patch/
 #COPY software/eap/modules/*.zip /tmp/modules/
 COPY support/applyPatch.sh  /
 
-RUN unzip -q /tmp/jboss-eap-*.zip -d $SOFTWARE_INSTALL_DIR
+RUN unzip -q '/tmp/jboss-eap-*.zip' -d $SOFTWARE_INSTALL_DIR
 
 RUN /applyPatch.sh
 

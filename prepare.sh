@@ -31,7 +31,7 @@ echo -e "\n This setup needs the following softwares packages (zip files):
 
 read -e -p " Want to continue (Y,n)?" -n 1 -r
 echo
-[[ ! $REPLY =~ ^[Yy]$ ]] && exit 1
+[[ ! "x$REPLY" =~ ^[Yyx]$ ]] && exit 1
 
 echo -e "\n >>> Test if docker and compose is installed..."
 docker --version
@@ -105,12 +105,15 @@ function build_image(){
    else
       echo -e "\n\t ${ORG}The image \"${USER_TAG_NAME}/${IMG_NAME}\" was found in your local docker registry!\n"
       tput sgr0
-      read -e -p " Want to REBUILD it(Y,n)?" -n 1 -r
+      read -e -p " Want to REBUILD it(N,y)?" -n 1 -r
       echo
       [[ $REPLY =~ ^[Yy]$ ]] && \
 	      docker build -t "$USER_TAG_NAME/$IMG_NAME" $IMAGES_DIR/$IMG_NAME
    fi
 }
+
+# avoid permission error during build process
+chmod a+rx $SOFTWARE_DIR/*
 
 echo -e "\n >>> Check the softwares required to setup the environment"
 test_bin_pkgs $EAP_SERVER_PKG_NAME
@@ -125,9 +128,6 @@ echo -e "\n >>> extracting the rhq-agent JAR installer..."
 unzip -j "$SOFTWARE_DIR/$JON_UPDATE_PKG_NAME" \
 	"jon-server-*/modules/org/rhq/server-startup/main/deployments/rhq.ear/rhq-downloads/rhq-agent/rhq-enterprise-agent-*.jar" \
 	-d software/
-
-# avoid permission error during build process
-chmod a+rx $SOFTWARE_DIR/*
 
 echo -e "\n >>> Move the zip pkgs files to its respective image's DIRs"
 # this is necessary because Dockerfile COPY does not support relative paths (../somepath)
@@ -158,9 +158,11 @@ build_image "eap"
 
 echo -e "\n----->"
 echo -e " >>> ALL SET!"
-echo -e "\t now you can start all the environment"
+echo -e "\t now you can start all tyyhe environment"
 echo -e "\t from this repo's root directory enter the following command
 		> docker-compose up
 		wait some minutes and VOILA!
 <-----"
 
+echo -e "\n\t Remember to add an entry in your /etc/resolv.conf: \n
+		nameserver 172.17.42.1"

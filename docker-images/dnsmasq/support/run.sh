@@ -16,3 +16,4 @@ trap 'echo TRAPed signal; stop_container' HUP INT QUIT KILL TERM
 # start services daemons
 /usr/sbin/incrond
 /usr/sbin/dnsmasq -d
+pkill -HUP dnsmasq

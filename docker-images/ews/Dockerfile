@@ -11,8 +11,8 @@ RUN useradd -c "Apache" -u 48 -s /bin/sh -r apache
 
 COPY software/*.zip /tmp/
 
-RUN unzip /tmp/jboss-ews-*.zip -d $SOFTWARE_INSTALL_DIR/; \
-	unzip /tmp/jboss-eap-native-*.zip -d $SOFTWARE_INSTALL_DIR/
+RUN unzip '/tmp/jboss-ews-*.zip' -d $SOFTWARE_INSTALL_DIR/; \
+	unzip '/tmp/jboss-eap-native-*.zip' -d $SOFTWARE_INSTALL_DIR/
 
 # remove some unused module's conf
 RUN rm $HTTPD_HOME/conf.d/proxy_ajp.conf; \
