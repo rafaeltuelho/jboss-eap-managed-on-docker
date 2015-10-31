@@ -67,7 +67,8 @@ else
    then
 	echo -e "\n\t ${ORG}It appears your 'docker0' network bridge got a different IP Addr: $current_docker0_addr"
 	echo -e "\t\t ${ORG} in this case we need to change the 'docker-compose.yml' descriptor to use this addr as dnsmasq bind addr."
-        sed -i.bkp 's/$DOCKER0_NETIFC_DEFAULT_ADDR/$current_docker0_addr/g' ./docker-compose.yml
+        sed_expr="s/$DOCKER0_NETIFC_DEFAULT_ADDR/$current_docker0_addr/g"
+        sed -i.bkp $sed_expr ./docker-compose.yml
    else
 	echo -e "\n\t ${ORG}'docker0' network bridge IP Addr: $current_docker0_addr \n"
    fi
