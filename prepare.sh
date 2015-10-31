@@ -3,6 +3,7 @@
 SOFTWARE_DIR="./software"
 IMAGES_DIR="./docker-images"
 USER_TAG_NAME="rsoares"
+DOCKER0_NETIFC_DEFAULT_ADDR="172.17.42.1"
 
 EAP_SERVER_PKG_NAME="jboss-eap-*.zip"
 EAP_PATCH_PKG_NAME="jboss-eap-*-patch*.zip"
@@ -31,7 +32,7 @@ echo -e "\n This setup needs the following softwares packages (zip files):
 
 read -e -p " Want to continue (Y,n)?" -n 1 -r
 echo
-[[ ! "x$REPLY" =~ ^[Yyx]$ ]] && exit 1
+[[ ! "$REPLY" =~ ^[Yy]$ ]] && exit 1
 
 echo -e "\n >>> Test if docker and compose is installed..."
 docker --version
@@ -57,9 +58,23 @@ then
    
    docker-machine ls
    echo -e "\n\t ENSURE your docker-machine instance have enough Disk and RAM mem available to run this setup. I recomend at least 20gb Disk and 4gb RAM"
+
+else
+
+   # Verify the IP ADDR for the docker0 network bridge
+   current_docker0_addr=$(ip addr show docker0 | awk '$1 == "inet" {gsub(/\/.*$/, "", $2); print $2}')
+   if [[ ! "$DOCKER0_NETIFC_DEFAULT_ADDR" == "$current_docker0_addr"  ]];
+   then
+	echo -e "\n\t ${ORG}It appears your 'docker0' network bridge got a different IP Addr: $current_docker0_addr"
+	echo -e "\t\t ${ORG} in this case we need to change the 'docker-compose.yml' descriptor to use this addr as dnsmasq bind addr."
+        sed -i.bkp 's/$DOCKER0_NETIFC_DEFAULT_ADDR/$current_docker0_addr/g' ./docker-compose.yml
+   else
+	echo -e "\n\t ${ORG}'docker0' network bridge IP Addr: $current_docker0_addr \n"
+   fi
 fi
 
 #read
+tput sgr0
 
 docker images >/dev/null 2>&1
 [[ $? != 0 ]] && \
