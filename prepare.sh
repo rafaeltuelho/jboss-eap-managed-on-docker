@@ -4,6 +4,7 @@ SOFTWARE_DIR="./software"
 IMAGES_DIR="./docker-images"
 USER_TAG_NAME="rsoares"
 DOCKER0_NETIFC_DEFAULT_ADDR="172.17.42.1"
+current_docker0_addr=$DOCKER0_NETIFC_DEFAULT_ADDR
 
 EAP_SERVER_PKG_NAME="jboss-eap-*.zip"
 EAP_PATCH_PKG_NAME="jboss-eap-*-patch*.zip"
@@ -128,6 +129,11 @@ function build_image(){
    fi
 }
 
+function updateComposeYML(){
+   DOCKER_BRIDGE_IP_ADDR=$(ip a s docker0 | sed -ne '/127.0.0.1/!{s/^[ \t]*inet[ \t]*\([0-9.]\+\)\/.*$/\1/p}')
+   sed -i 's;#DOCKER_BRIDGE_IP#;$DOCKER_BRIDGE_IP_ADDR;g' ./docker-compose.yml
+}
+
 # avoid permission error during build process
 chmod a+rx $SOFTWARE_DIR/*
 
@@ -181,4 +187,4 @@ echo -e "\t from this repo's root directory enter the following command
 <-----"
 
 echo -e "\n\t Remember to add an entry in your /etc/resolv.conf: \n
-		nameserver 172.17.42.1"
+		nameserver $current_docker0_addr"

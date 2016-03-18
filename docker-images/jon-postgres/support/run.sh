@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # call the runtime setup
-. /runtime_setup.sh
+/usr/bin/runtime_setup.sh
 
 # set the agent properties in a way it don't need a static agent-configuration.xml
 export RHQ_AGENT_HOME=/opt/redhat/rhq-agent
@@ -24,6 +24,6 @@ stop_container(){
 trap 'echo TRAPed signal; stop_container' HUP INT QUIT KILL TERM
 
 # call the centos-postgresql base image' startup script
-/start_postgres.sh
+run-postgresql
 
 
