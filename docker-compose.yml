@@ -8,7 +8,7 @@ dnsmasq:
   privileged: true
   hostname: dnsmasq
 jonpostgres:
-  image: rsoares/jon-postgres:9.4
+  image: rsoares/jon-postgres
   environment:
    - POSTGRESQL_USER=rhqadmin
    - POSTGRESQL_PASSWORD=rhqadmin
