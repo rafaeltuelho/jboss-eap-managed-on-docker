@@ -14,15 +14,14 @@ RUN yum install -y java-1.7.0-openjdk; yum clean all
 RUN mkdir $SOFTWARE_INSTALL_DIR; chown postgres.postgres $SOFTWARE_INSTALL_DIR
 
 VOLUME /dnsmasq.hosts
-RUN chmod -Rf a+w /dnsmasq.hosts
 
 USER postgres
 
 # install the RHQ/JON Agent to monitor the Postgres instance inside the container
-COPY software/rhq-enterprise-agent-*.jar $SOFTWARE_INSTALL_DIR
-WORKDIR /opt/redhat
-RUN java -jar rhq-enterprise-agent-*.jar --install
-RUN rm rhq-enterprise-agent-*.jar
+COPY software/rhq-enterprise-agent-*.jar $SOFTWARE_INSTALL_DIR/
+WORKDIR $SOFTWARE_INSTALL_DIR
+RUN java -jar $SOFTWARE_INSTALL_DIR/rhq-enterprise-agent-*.jar --install=$SOFTWARE_INSTALL_DIR
+RUN rm $SOFTWARE_INSTALL_DIR/rhq-enterprise-agent-*.jar
 
 # Apply some tuning to the original PG installation (from base image)
 #COPY support/pg_tuning.conf /tmp/

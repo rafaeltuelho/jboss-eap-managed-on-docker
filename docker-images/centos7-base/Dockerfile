@@ -9,7 +9,7 @@ ENV TERM=xterm SOFTWARE_INSTALL_DIR=/opt/redhat
 RUN mkdir -p $SOFTWARE_INSTALL_DIR
 
 VOLUME /dnsmasq.hosts
-RUN chmod -Rf a+w /dnsmasq.hosts
+RUN chmod -Rf a+w /dnsmasq.hosts/
 
 COPY support/*.sh /
 
