@@ -321,8 +321,8 @@ In my case I used the graphical firewall configuration tool (hit `sudo firewall-
 or use the following commands in your shell
 
 ```
-sudo firewall-cmd --zone=trusted --add-service-dns
-sudo firewall-cmd --zone=trusted --permanent --add-service-dns
+sudo firewall-cmd --zone=trusted --add-service dns
+sudo firewall-cmd --zone=trusted --permanent --add-service dns
 sudo firewall-cmd --zone=trusted --change-interface=docker0
 sudo firewall-cmd --zone=trusted --permanent --change-interface=docker0
 ```

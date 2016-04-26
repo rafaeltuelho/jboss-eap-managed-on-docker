@@ -74,13 +74,38 @@ Deployments
 
 #Memory Leak demo
 
-```
-watch curl http://apache/scalingdemo-1.0/ws/char  
-curl http://apache/scalingdemo-1.0/ws/eat  
-curl http://apache/scalingdemo-1.0/ws/eat/quick
+Create a new Alert Definition for a Managed Server Resource.
 
-curl http://172.17.0.7:8230/scalingdemo-1.0/ws/eat  
-curl http://172.17.0.7:8230/scalingdemo-1.0/ws/eat/quick
+For example, navigate through...
+```
+eap-slave2
+	JBossAS7 Host Controllers
+		EAP Host Controller
+			Managed Servers
+				EAP server1
+					Server Configuration
+						host=eap-slave1,server=server1,core-service=platform-mbean,type=memory
+							memory
+```
+them...
+ 
+ * Tab: `Alerts`
+ * `New`
+ * Name: `jvm-high`
+ * Conditions
+  * Add
+   * Condition Type: `Measurement Absolute Value Threshold`
+   * Metric: `Used Heap`
+   * Comparator: `>`
+   * Metric value: `100mb` 
+
+```
+watch curl http://apache/scalingdemo/ws/char  
+curl http://apache/scalingdemo/ws/eat  
+curl http://apache/scalingdemo/ws/eat/quick
+
+curl http://172.17.0.7:8230/scalingdemo/ws/eat  
+curl http://172.17.0.7:8230/scalingdemo/ws/eat/quick
 ```
 
 

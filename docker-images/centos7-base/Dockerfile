@@ -2,7 +2,7 @@ FROM centos:centos7
 
 MAINTAINER Gustavo Luszczynski <gluszczy@redhat.com>, Rafael Soares (Tuelho) <rafaelcba@gmail.com>
 
-RUN yum -y update; yum -y install hostname unzip xterm net-tools nc openssh-server wget bsdtar; yum clean all
+RUN yum -y update; yum -y install hostname iproute unzip xterm net-tools nc openssh-server wget bsdtar; yum clean all
 
 ENV TERM=xterm SOFTWARE_INSTALL_DIR=/opt/redhat
 
