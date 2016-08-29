@@ -29,7 +29,7 @@ sed -i 's;^rhq\.autoinstall\.public-endpoint-address=;rhq.autoinstall.public-end
 chmod a+x $RHQ_SERVER_HOME/jbossas/bin/*.sh
 
 find /tmp -name "*jon-plugin*.zip" -exec unzip '{}' -d /tmp \;
-find /tmp/jon-plugin-* -name "*.jar" -exec cp -v '{}' ${RHQ_SERVER_HOME}/plugins/ \;
+find /tmp/*plugin* -name "*.jar" -exec cp -v '{}' ${RHQ_SERVER_HOME}/plugins/ \;
 
 rm -rf /tmp/jon-server-*.zip
-rm -rf /tmp/jon-plugin-*
+#rm -rf /tmp/*plugin*

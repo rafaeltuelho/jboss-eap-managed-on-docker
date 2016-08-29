@@ -1,4 +1,4 @@
-FROM centos
+FROM centos:7
 
 MAINTAINER Gustavo Luszczynski <gluszczy@redhat.com>, Rafael T. C. Soares <rafaelcba@gmail.com>
 
