@@ -215,3 +215,44 @@ Apache
 #Slow Response Time Demo
 
 	http://apache/sleep/sleep.jsp?SLEEP_TIME=10023
+
+#HA Domain Controller
+What happens to the deployed applications if the domain controller crashes or is shutdown ?
+	https://access.redhat.com/solutions/66541
+
+High Availability of the Domain Controller in JBoss EAP 6
+	https://access.redhat.com/solutions/255963
+
+```
+On Original Master
+==
+/host=eap-slave1/core-service=discovery-options/static-discovery=primary:add(host=master,port=9999)
+/host=eap-slave1/core-service=discovery-options/static-discovery=primary:add(host=master,port=9999)
+
+On Backup Master
+==
+/host=eap-slave1:write-local-domain-controller()
+
+/host=eap-slave1:write-remote-domain-controller(host="${jboss.domain.master.address}",port="${jboss.domain.master.port:9999}",security-realm="ManagementRealm",username="admin")
+
+ /host=eap-slave1:reload()
+```
+
+#GC Log Rotation
+```
+/server-group=other-server-group/jvm=default:write-attribute(name=jvm-options,value=["-verbose:gc", "-Xloggc:gc_%p_%t.log", "-XX:+UseGCLogFileRotation", "-XX:NumberOfGCLogFiles=10", "-XX:GCLogFileSize=50M","-XX:+PrintGCDetails", "-XX:+PrintGCDateStamps", "-XX:+PrintGCApplicationStoppedTime"])
+```
+
+#OutOfMemory
+```
+bool  HeapDumpOnOutOfMemoryError                = false                               {manageable}
+ccstr HeapDumpPath                              =    
+bool  CrashOnOutOfMemoryError                   = false                               {product}
+bool  ExitOnOutOfMemoryError                    = false                               {product}
+bool  HeapDumpOnOutOfMemoryError                = false                               {manageable}
+ccstrlist OnOutOfMemoryError   
+```
+
+```
+-verbose:gc -Xloggc:/opt/redhat/jboss-eap-6.4/domain/servers/gc_%p_%t.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=50M -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime -XX:OnOutOfMemoryError="gcore -o /opt/redhat/jboss-eap-6.4/domain/servers/jvm_%p.coredump %p" 
+```
